@@ -8,10 +8,45 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-#hello world
+
 #Libraries
 ```{r}
-library(dyplyr)
+library(leaflet)
+library(dplyr)
 library(tidyr)
+library(ggplot2)
+library(DT)
+```
+
+#loading the data
+
+```{r}
+esc <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3Af119a05b-bbe7-4aea-93c6-85434dcb1c5e", method = "libcurl"), 
+                stringsAsFactors = FALSE)
+```
+
+#median by year
+
+```{r}
+escapement <- esc %>% 
+  separate(sampleDate, c("Year", "Month", "Day"), sep="-") %>% 
+  group_by(Species, Year) %>% 
+  summarise(annualcount = sum(DailyCount)) %>% 
+              group_by(Species) %>% 
+              summarise(median_escapement = median(annualcount))
+head(escapement)
+```
+#bar plot
+
+Bar plot of median escapement by species.
+
+```{r}
+ggplot(escapement, aes(Species, median_escapement))+
+  geom_col() +
+  coord_flip()
+```
+
+```{r}
+
 ```
 
