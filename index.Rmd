@@ -46,7 +46,25 @@ ggplot(escapement, aes(Species, median_escapement))+
   coord_flip()
 ```
 
-```{r}
+#maps
+## Clean the data
+Remove columns we don't need, keep one row for each location.
 
+```{r}
+locations <- esc %>% 
+  select(Location, Latitude, Longitude) %>% 
+  group_by(Location, Latitude, Longitude) %>%
+  summarise(n=n())%>%
+  drop_na()
+
+head(locations)
+```
+
+##Leaflet map
+
+```{r}
+leaflet(locations) %>% 
+  addTiles() %>% 
+  addMarkers(lng = ~Longitude, lat = ~Latitude, popup =~Location)
 ```
 
